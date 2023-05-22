@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id  Int @default(autoincrement()) @id
+  name  String
+  email String @unique
+  nim String @unique
+  violations Violation[]
+  
+  @@map("students")
+}
+
+model ParkingData {
+  id Int @default(autoincrement()) @id
+  nim String
+  lisencePlate String
+  createdAt DateTime @default(now())
+  @@unique([nim, lisencePlate], name: "ownerIdentifier")
+
+  @@map("parking-data")
+}
+
+model Violation {
+  id Int @default(autoincrement()) @id
+  evidence String @db.MediumText
+  description String?
+  createdAt DateTime @default(now())
+  
+  studentId Int
+  student Student @relation(fields: [studentId], references: [id])
+  
+  @@map("violations")
+}
